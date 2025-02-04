@@ -1,67 +1,99 @@
-#include <stdio.h>
-#include "pico/stdlib.h"   // Inclui a biblioteca padrão para funcionalidades básicas como GPIO, temporização e comunicação serial.
-#include "hardware/timer.h" // Inclui a biblioteca para gerenciamento de temporizadores de hardware.
+// Autor: [Seu Nome]
+// Data: 2025-02-04
+// Descrição: Programa para controle de um semáforo utilizando a placa Raspberry Pi Pico.
+//            O semáforo alterna entre os estados vermelho, amarelo e verde em intervalos de 3 segundos,
+//            utilizando temporizadores de hardware para garantir a precisão da temporização.
 
-#define LED_PIN_RED 13
-#define LED_PIN_BLUE 12
-#define LED_PIN_GREEN 11
+// Inclusão de bibliotecas necessárias para o programa
+#include <stdio.h>            // Biblioteca padrão de E/S
+#include "pico/stdlib.h"     // Biblioteca padrão do Pico para GPIO, temporização e comunicação serial
+#include "hardware/timer.h" // Biblioteca para gerenciamento de temporizadores de hardware
 
-// Função de callback que será chamada repetidamente pelo temporizador
+// Definição de constantes
+#define LED_RED_PIN 13        // GPIO13 - LED Vermelho
+#define LED_YELLOW_PIN 12     // GPIO12 - LED Amarelo
+#define LED_GREEN_PIN 11     // GPIO11 - LED Verde
+#define INTERVALO 3000      // Intervalo de troca de estado em milissegundos (3 segundos)
+
+// Protótipo da função de callback do temporizador
+/**
+ * @brief Callback do temporizador para controlar o semáforo.
+ *
+ * Esta função é chamada periodicamente pelo temporizador para alternar o estado dos LEDs
+ * que representam um semáforo.
+ *
+ * @param t Ponteiro para a estrutura do temporizador.
+ * @return true para continuar a repetição do temporizador, false para parar.
+ */
+bool semaforo_callback(struct repeating_timer *t);
+
+/**
+ * @brief Inicializa os componentes do semáforo.
+ * 
+ * Esta função inicializa os pinos dos LEDs do semáforo e configura o semáforo no estado inicial.
+ */
+void init_components();
+
+int main() {
+    stdio_init_all();  // Inicializa a comunicação serial
+    init_componets(); // Inicializa os componentes
+
+    // Declara e inicializa o temporizador
+    struct repeating_timer timer_Semaforo;
+    add_repeating_timer_ms(INTERVALO, semaforo_callback, NULL, &timer_Semaforo);
+
+    // Loop principal
+    while (1) {
+        printf("1 segundo passou\n");
+        sleep_ms(1000);
+    }
+
+    return 0;
+}
+
+// Função de callback do temporizador para alternar os estados do semáforo
 bool semaforo_callback(struct repeating_timer *t) {
-    static int estado = 1;
+    static uint8_t estado = 0; // Estado atual do semáforo
 
     switch (estado) {
         case 0:  // Vermelho
-            gpio_put(LED_PIN_RED, 1);
-            gpio_put(LED_PIN_BLUE, 0);
-            gpio_put(LED_PIN_GREEN, 0);
+            printf("Vermelho\n");
+            gpio_put(LED_RED_PIN, 1);     // Liga o LED vermelho
+            gpio_put(LED_YELLOW_PIN, 0); // Desliga o LED amarelo
+            gpio_put(LED_GREEN_PIN, 0); // Desliga o LED verde
             estado = 1;
             break;
         case 1:  // Amarelo
-            gpio_put(LED_PIN_RED, 1);
-            gpio_put(LED_PIN_BLUE, 0);
-            gpio_put(LED_PIN_GREEN, 1);
+            printf("Amarelo\n");
+            gpio_put(LED_RED_PIN, 0);        // Desliga o LED vermelho
+            gpio_put(LED_YELLOW_PIN, 1);    // Liga o LED amarelo
+            gpio_put(LED_GREEN_PIN, 0);    // Desliga o LED verde
             estado = 2;
             break;
         case 2:  // Verde
-            gpio_put(LED_PIN_RED, 0);
-            gpio_put(LED_PIN_BLUE, 0);
-            gpio_put(LED_PIN_GREEN, 1);
+            printf("Verde\n");
+            gpio_put(LED_RED_PIN, 0);     // Desliga o LED vermelho
+            gpio_put(LED_YELLOW_PIN, 0); // Desliga o LED amarelo
+            gpio_put(LED_GREEN_PIN, 1); // Liga o LED verde
             estado = 0;
             break;
     }
     return true;
 }
 
-int main() {
-    // Inicializa a comunicação serial, permitindo o uso de funções como printf.
-    stdio_init_all();
+void init_components() {
+   // Inicializa os LEDs como saída
+    gpio_init(LED_RED_PIN);               // Inicializa o pino do LED vermelho
+    gpio_set_dir(LED_RED_PIN, GPIO_OUT); // Configura o pino do LED vermelho como saída
 
-    // Inicializar o pino GPIO11
-    gpio_init(LED_PIN_GREEN);
-    gpio_set_dir(LED_PIN_GREEN, GPIO_OUT);
+    gpio_init(LED_YELLOW_PIN);               // Inicializa o pino do LED amarelo
+    gpio_set_dir(LED_YELLOW_PIN, GPIO_OUT); // Configura o pino do LED amarelo como saída
 
-    //Inicializar o pino GPIO12
-    gpio_init(LED_PIN_BLUE);
-    gpio_set_dir(LED_PIN_BLUE, GPIO_OUT);
+    gpio_init(LED_GREEN_PIN);               // Inicializa o pino do LED verde
+    gpio_set_dir(LED_GREEN_PIN, GPIO_OUT); // Configura o pino do LED verde como saída
 
-    //Inicializar o pino GPIO13
-    gpio_init(LED_PIN_RED);
-    gpio_set_dir(LED_PIN_RED, GPIO_OUT);
-    gpio_put(LED_PIN_RED, 1);
-
-    // Declaração de uma estrutura de temporizador de repetição.
-    // Esta estrutura armazenará informações sobre o temporizador configurado.
-    struct repeating_timer timer_Segundos, timer_Semaforo;
-
-    // Configura o temporizador para chamar a função de callback_semaforo.
-    add_repeating_timer_ms(3000, semaforo_callback, NULL, &timer_Semaforo);
-
-    // Loop infinito que mantém o programa em execução.
-    while (true) {
-        // Rotina principal do programa
-        printf("1 segundo passou\n");
-        sleep_ms(1000);
-    }
-    return 0;
+    // Inicia o semáforo no estado vermelho
+    gpio_put(LED_RED_PIN, 1);     // Liga o LED vermelho
+    gpio_put(LED_YELLOW_PIN, 0); // Desliga o LED amarelo
+    gpio_put(LED_GREEN_PIN, 0); // Desliga o LED verde
 }
