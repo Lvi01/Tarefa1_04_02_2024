@@ -36,7 +36,7 @@ void init_components();
 
 int main() {
     stdio_init_all();  // Inicializa a comunicação serial
-    init_componets(); // Inicializa os componentes
+    init_components(); // Inicializa os componentes
 
     // Declara e inicializa o temporizador
     struct repeating_timer timer_Semaforo;
