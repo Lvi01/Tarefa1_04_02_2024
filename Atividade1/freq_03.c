@@ -53,7 +53,7 @@ int main() {
 
 // Função de callback do temporizador para alternar os estados do semáforo
 bool semaforo_callback(struct repeating_timer *t) {
-    static uint8_t estado = 0; // Estado atual do semáforo
+    static uint8_t estado = 1; // Estado atual do semáforo
 
     switch (estado) {
         case 0:  // Vermelho
