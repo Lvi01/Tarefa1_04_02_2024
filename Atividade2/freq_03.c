@@ -72,23 +72,17 @@ int64_t turn_off_callback(alarm_id_t id, void *user_data) {
 
     switch (estado) {
         case 1: 
-            printf("Apagando 1 led\n");
+            printf("Apagando o LED vermelho\n");
             gpio_put(LED_RED_PIN, 0);        // Desliga o LED vermelho
-            gpio_put(LED_YELLOW_PIN, 1);    // Liga o LED amarelo
-            gpio_put(LED_GREEN_PIN, 1);    // Desliga o LED verde
             estado = 2;
             break;
         case 2:
-            printf("Apagando 2 leds\n");
-            gpio_put(LED_RED_PIN, 0);     // Desliga o LED vermelho
+            printf("Apagando o LED amarelo\n");
             gpio_put(LED_YELLOW_PIN, 0); // Desliga o LED amarelo
-            gpio_put(LED_GREEN_PIN, 1); // Liga o LED verde
             estado = 3;
             break;
         case 3:
-            printf("Apagando todos os leds\n");
-            gpio_put(LED_RED_PIN, 0);     // Desliga o LED vermelho
-            gpio_put(LED_YELLOW_PIN, 0); // Desliga o LED amarelo
+            printf("Apagando o LED verde\n");
             gpio_put(LED_GREEN_PIN, 0); // Desliga o LED verde
             gpio_set_irq_enabled(button_A, GPIO_IRQ_EDGE_FALL, true); // Habilita a interrupção no botão A novamente
             estado = 1;
