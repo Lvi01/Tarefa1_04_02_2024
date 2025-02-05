@@ -1,6 +1,7 @@
 # 🚦 Simulação de Temporizadores no Raspberry Pi Pico W
 
 Este repositório contém a implementação das atividades relacionadas ao uso de temporizadores periódicos e de um disparo (one-shot) utilizando a plataforma Raspberry Pi Pico W e o Pico SDK.
+A resolução de cada atividade pode ser encontrada nas suas respectivas pastas dentro do repositório, para garantir sua organização e legibilidade.
 
 # 📌 Objetivo
 
